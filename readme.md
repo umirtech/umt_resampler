@@ -78,11 +78,13 @@ uint32_t produced = rs.resample(
 ## Benchmark
 
 <!-- BENCHMARK_START -->
-| Metric | Value |
+| Config | Value |
 |--------|------|
-| Samples/sec | 119600342.42 |
-| Frames/sec | 119600342.42 FramesPerSec |
-| Realtime Factor | 1356.01x |
-| Last Updated | 2026-04-20 09:53 UTC |
+| Channels | 2 → 2 |
+| Sample Rate | 2 → 2 |
+| Samples/sec | 113901881.53 |
+| Frames/sec | 113901881.53 FramesPerSec |
+| Realtime Factor | 1291.40x |
+| Last Updated | 2026-04-20 10:01 UTC |
 
 <!-- BENCHMARK_END -->
