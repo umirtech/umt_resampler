@@ -30,23 +30,22 @@ jobs:
         run: |
           OUTPUT=$(./build/benchmark bench)
           echo "$OUTPUT"
-
-          # Extract core config
-          SRC_CH=$(echo "$OUTPUT" | grep SrcCh | awk -F'[= ]' '{print $2}')
-          DST_CH=$(echo "$OUTPUT" | grep SrcCh | awk -F'[= ]' '{print $4}')
-          SRC_RATE=$(echo "$OUTPUT" | grep SrcRate | awk -F'[= ]' '{print $2}')
-          DST_RATE=$(echo "$OUTPUT" | grep SrcRate | awk -F'[= ]' '{print $4}')
-
-          # Extract performance
-          SPS=$(echo "$OUTPUT" | grep SamplesPerSec | awk -F= '{print $2}' | awk '{print $1}')
-          FPS=$(echo "$OUTPUT" | grep FramesPerSec | awk -F= '{print $2}')
-          RT=$(echo "$OUTPUT" | grep RealtimeFactor | awk -F= '{print $2}')
-
+          
+          CONFIG_LINE=$(echo "$OUTPUT" | grep SrcCh)
+      
+          SRC_CH=$(echo "$CONFIG_LINE" | sed -E 's/.*SrcCh=([0-9]+).*/\1/')
+          DST_CH=$(echo "$CONFIG_LINE" | sed -E 's/.*DstCh=([0-9]+).*/\1/')
+          SRC_RATE=$(echo "$CONFIG_LINE" | sed -E 's/.*SrcRate=([0-9]+).*/\1/')
+          DST_RATE=$(echo "$CONFIG_LINE" | sed -E 's/.*DstRate=([0-9]+).*/\1/')
+      
+          SPS=$(echo "$OUTPUT" | grep SamplesPerSec | sed -E 's/.*SamplesPerSec=([0-9.]+).*/\1/')
+          FPS=$(echo "$OUTPUT" | grep FramesPerSec | sed -E 's/.*FramesPerSec=([0-9.]+).*/\1/')
+          RT=$(echo "$OUTPUT" | grep RealtimeFactor | sed -E 's/.*RealtimeFactor=([0-9.]+x).*/\1/')
+      
           echo "SRC_CH=$SRC_CH" >> $GITHUB_ENV
           echo "DST_CH=$DST_CH" >> $GITHUB_ENV
           echo "SRC_RATE=$SRC_RATE" >> $GITHUB_ENV
           echo "DST_RATE=$DST_RATE" >> $GITHUB_ENV
-
           echo "SPS=$SPS" >> $GITHUB_ENV
           echo "FPS=$FPS" >> $GITHUB_ENV
           echo "RT=$RT" >> $GITHUB_ENV
