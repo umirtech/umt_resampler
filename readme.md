@@ -73,3 +73,9 @@ uint32_t produced = rs.resample(
     output,
     consumed
 );
+```
+
+## Benchmark
+
+<!-- BENCHMARK_START -->
+<!-- BENCHMARK_END -->
