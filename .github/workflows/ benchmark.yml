@@ -31,25 +31,38 @@ jobs:
           OUTPUT=$(./build/benchmark bench)
           echo "$OUTPUT"
 
-          # Extract values
+          # Extract core config
+          SRC_CH=$(echo "$OUTPUT" | grep SrcCh | awk -F'[= ]' '{print $2}')
+          DST_CH=$(echo "$OUTPUT" | grep SrcCh | awk -F'[= ]' '{print $4}')
+          SRC_RATE=$(echo "$OUTPUT" | grep SrcRate | awk -F'[= ]' '{print $2}')
+          DST_RATE=$(echo "$OUTPUT" | grep SrcRate | awk -F'[= ]' '{print $4}')
+
+          # Extract performance
           SPS=$(echo "$OUTPUT" | grep SamplesPerSec | awk -F= '{print $2}' | awk '{print $1}')
           FPS=$(echo "$OUTPUT" | grep FramesPerSec | awk -F= '{print $2}')
           RT=$(echo "$OUTPUT" | grep RealtimeFactor | awk -F= '{print $2}')
+
+          echo "SRC_CH=$SRC_CH" >> $GITHUB_ENV
+          echo "DST_CH=$DST_CH" >> $GITHUB_ENV
+          echo "SRC_RATE=$SRC_RATE" >> $GITHUB_ENV
+          echo "DST_RATE=$DST_RATE" >> $GITHUB_ENV
 
           echo "SPS=$SPS" >> $GITHUB_ENV
           echo "FPS=$FPS" >> $GITHUB_ENV
           echo "RT=$RT" >> $GITHUB_ENV
 
-      - name: Update README
+      - name: Update readme
         run: |
           DATE=$(date -u +"%Y-%m-%d %H:%M UTC")
 
-          TABLE="| Metric | Value |\n"
+          TABLE="| Config | Value |\n"
           TABLE="$TABLE|--------|------|\n"
-          TABLE="$TABLE| Samples/sec | $SPS |\n"
-          TABLE="$TABLE| Frames/sec | $FPS |\n"
-          TABLE="$TABLE| Realtime Factor | $RT |\n"
-          TABLE="$TABLE| Last Updated | $DATE |\n"
+          TABLE="$TABLE| Channels | ${SRC_CH} → ${DST_CH} |\n"
+          TABLE="$TABLE| Sample Rate | ${SRC_RATE} → ${DST_RATE} |\n"
+          TABLE="$TABLE| Samples/sec | ${SPS} |\n"
+          TABLE="$TABLE| Frames/sec | ${FPS} |\n"
+          TABLE="$TABLE| Realtime Factor | ${RT} |\n"
+          TABLE="$TABLE| Last Updated | ${DATE} |\n"
 
           awk -v table="$TABLE" '
           BEGIN {print_flag=1}
