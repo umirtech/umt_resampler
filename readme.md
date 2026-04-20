@@ -81,10 +81,10 @@ uint32_t produced = rs.resample(
 | Config | Value |
 |--------|------|
 | Channels | 2 → 2 |
-| Sample Rate | 2 → 2 |
-| Samples/sec | 113901881.53 |
-| Frames/sec | 113901881.53 FramesPerSec |
-| Realtime Factor | 1291.40x |
-| Last Updated | 2026-04-20 10:01 UTC |
+| Sample Rate | 48000 → 44100 |
+| Samples/sec | 111620070.77 |
+| Frames/sec | 55810035.38 |
+| Realtime Factor | 1265.53x |
+| Last Updated | 2026-04-20 10:04 UTC |
 
 <!-- BENCHMARK_END -->
