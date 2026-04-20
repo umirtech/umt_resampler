@@ -40,98 +40,100 @@ void benchmarkResampler(
 ){
     using clock = std::chrono::high_resolution_clock;
 
-    const int totalFrames = srcRate * seconds;
-    const int totalSamples = totalFrames * srcChannels;
+        const int totalFrames = srcRate * seconds;
+        const int totalSamples = totalFrames * srcChannels;
 
-    std::vector<float> input(totalSamples);
 
-    std::mt19937 rng(0);
-    std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
+        std::vector<float> input(totalSamples);
 
-    for (auto& v : input)
-        v = dist(rng);
+        std::mt19937 rng(0);
+        std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
 
-    umt::Resampler rs;
-    rs.init(srcChannels, dstChannels, srcRate, dstRate);
+        for (auto& v : input)
+            v = dist(rng);
 
-    uint32_t expectedOut = rs.calculateOutputSampleCounts(totalSamples);
-    std::vector<float> output(expectedOut);
+        umt::Resampler rs;
+        rs.init(srcChannels, dstChannels, srcRate, dstRate);
 
-  
-    for (int i = 0; i < 5; ++i)
-    {
-        rs.reset();
+        uint32_t expectedOut = rs.calculateOutputSampleCounts(totalSamples);
+        std::vector<float> output(expectedOut);
 
-        uint32_t consumedTotal = 0;
 
-        while (consumedTotal < totalSamples)
+        for (int i = 0; i < 5; ++i)
         {
-            uint32_t consumed = 0;
+            rs.reset();
 
-            rs.resample(
-                input.data() + consumedTotal,
-                totalSamples - consumedTotal,
-                output.data(),
-                consumed
-            );
+            uint32_t consumedTotal = 0;
 
-            consumedTotal += consumed;
-        }
-    }
+            while (consumedTotal < totalSamples)
+            {
+                uint32_t consumed = 0;
 
-  
-    const int iterations = 10;
+                rs.resample(
+                        input.data() + consumedTotal,
+                        totalSamples - consumedTotal,
+                        output.data(),
+                        consumed
+                );
 
-    double totalTime = 0.0;
-    int64_t totalProduced = 0;
-
-    for (int it = 0; it < iterations; ++it)
-    {
-        rs.reset();
-
-        uint32_t consumedTotal = 0;
-        uint32_t producedTotal = 0;
-
-        auto t0 = clock::now();
-
-        while (consumedTotal < totalSamples)
-        {
-            uint32_t consumed = 0;
-
-            uint32_t produced = rs.resample(
-                input.data() + consumedTotal,
-                totalSamples - consumedTotal,
-                output.data() + producedTotal,
-                consumed
-            );
-
-            consumedTotal += consumed;
-            producedTotal += produced;
+                consumedTotal += consumed;
+            }
         }
 
-        auto t1 = clock::now();
 
-        totalTime += std::chrono::duration<double>(t1 - t0).count();
-        totalProduced = producedTotal;
-    }
+        const int iterations = 10;
 
-    double avgTime = totalTime / iterations;
+        double totalTime = 0.0;
+        int64_t totalProduced = 0;
 
-    double samplesPerSec = totalProduced / avgTime;
-    double framesPerSec  = (totalProduced / dstChannels) / avgTime;
-    double realtimeFactor = framesPerSec / dstRate;
+        for (int it = 0; it < iterations; ++it)
+        {
+            rs.reset();
 
-    LOG("=== Resampler Benchmark ===");
-    LOG("SrcCh=%d DstCh=%d SrcRate=%d DstRate=%d",
-        srcChannels, dstChannels, srcRate, dstRate);
+            uint32_t consumedTotal = 0;
+            uint32_t producedTotal = 0;
 
-    LOG("TotalProducedSamples=%lld AvgTime=%.6f sec",
-        (long long)totalProduced, avgTime);
+            auto t0 = clock::now();
 
-    LOG("SamplesPerSec=%.2f FramesPerSec=%.2f",
-        samplesPerSec, framesPerSec);
+            while (consumedTotal < totalSamples)
+            {
+                uint32_t consumed = 0;
 
-    LOG("RealtimeFactor=%.2fx", realtimeFactor);
+                uint32_t produced = rs.resample(
+                        input.data() + consumedTotal,
+                        totalSamples - consumedTotal,
+                        output.data(),
+                        consumed
+                );
+
+                consumedTotal += consumed;
+                producedTotal += produced;
+            }
+
+            auto t1 = clock::now();
+
+            totalTime += std::chrono::duration<double>(t1 - t0).count();
+            totalProduced = producedTotal;
+        }
+
+        double avgTime = totalTime / iterations;
+
+        double samplesPerSec = totalProduced / avgTime;
+        double framesPerSec  = (totalProduced / dstChannels) / avgTime;
+        double realtimeFactor = framesPerSec / dstRate;
+
+
+        LOG("=== Resampler Benchmark ===");
+        LOG("SrcCh=%d DstCh=%d SrcRate=%d DstRate=%d",
+            srcChannels, dstChannels, srcRate, dstRate);
+
+        LOG("TotalProducedSamples=%lld AvgTime=%.6f sec",
+            (long long)totalProduced, avgTime);
+
+        LOG("SamplesPerSec=%.2f FramesPerSec=%.2f",
+            samplesPerSec, framesPerSec);
+
+        LOG("RealtimeFactor=%.2fx", realtimeFactor);
 }
 
 
