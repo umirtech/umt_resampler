@@ -1,0 +1,74 @@
+name: Benchmark Update
+
+on:
+  workflow_dispatch:
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++
+
+      - name: Configure
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build -j
+
+      - name: Run benchmark
+        id: bench
+        run: |
+          OUTPUT=$(./build/benchmark bench)
+          echo "$OUTPUT"
+
+          # Extract values
+          SPS=$(echo "$OUTPUT" | grep SamplesPerSec | awk -F= '{print $2}' | awk '{print $1}')
+          FPS=$(echo "$OUTPUT" | grep FramesPerSec | awk -F= '{print $2}')
+          RT=$(echo "$OUTPUT" | grep RealtimeFactor | awk -F= '{print $2}')
+
+          echo "SPS=$SPS" >> $GITHUB_ENV
+          echo "FPS=$FPS" >> $GITHUB_ENV
+          echo "RT=$RT" >> $GITHUB_ENV
+
+      - name: Update README
+        run: |
+          DATE=$(date -u +"%Y-%m-%d %H:%M UTC")
+
+          TABLE="| Metric | Value |\n"
+          TABLE="$TABLE|--------|------|\n"
+          TABLE="$TABLE| Samples/sec | $SPS |\n"
+          TABLE="$TABLE| Frames/sec | $FPS |\n"
+          TABLE="$TABLE| Realtime Factor | $RT |\n"
+          TABLE="$TABLE| Last Updated | $DATE |\n"
+
+          awk -v table="$TABLE" '
+          BEGIN {print_flag=1}
+          /<!-- BENCHMARK_START -->/ {
+              print;
+              print table;
+              print_flag=0;
+              next;
+          }
+          /<!-- BENCHMARK_END -->/ {
+              print_flag=1;
+          }
+          print_flag {print}
+          ' README.md > README.tmp && mv README.tmp README.md
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add README.md
+          git commit -m "Update benchmark results" || echo "No changes"
+          git push
