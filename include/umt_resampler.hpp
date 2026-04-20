@@ -88,7 +88,7 @@
 #include <cmath>
 #include <cstdint>
 
-#define optimize __attribute__((__always_inline__, __nodebug__))
+#define optimize __attribute__((__always_inline__))
 
 namespace umt {
 
@@ -426,18 +426,14 @@ namespace umt {
 
             if (size < kDelay)
             {
-                // write at tail
                 pos = (head + size) & kMask;
                 size++;
             }
             else
             {
-                // overwrite oldest (at head)
                 pos = head;
                 head = (head + 1) & kMask;
             }
-
-            // write mirrored
 
             float* __restrict ch = soa;
             for (int c = 0; c < srcChannels; ++c)
