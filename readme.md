@@ -46,14 +46,6 @@ The implementation is written in clean scalar C++ to allow compilers (Clang/GCC)
 
 ---
 
-## Design
-
-- Algorithm: **Polyphase FIR**
-- Window: **Kaiser (β ≈ 6)**
-- Focus: **low latency + high throughput**
-
----
-
 ### Basic Example
 
 ```cpp
@@ -73,6 +65,61 @@ uint32_t produced = rs.resample(
     output,
     consumed
 );
+```
+
+### Streaming Example (Recommended)
+
+```cpp
+#include "umt_resampler.hpp"
+#include <vector>
+#include <cstdint>
+
+int main()
+{
+    const int srcChannels = 2;
+    const int dstChannels = 2;
+    const int srcRate = 48000;
+    const int dstRate = 44100;
+
+    umt::Resampler rs;
+    rs.init(srcChannels, dstChannels, srcRate, dstRate);
+
+    const int chunkFrames = 256;
+    const int chunkSamples = chunkFrames * srcChannels;
+
+    std::vector<float> input(chunkSamples);
+
+    // Fill with dummy data (replace with real audio)
+    for (auto &v : input) v = 0.1f;
+
+    // Allocate correct output size
+    uint32_t maxOut = rs.calculateOutputSampleCounts(chunkSamples);
+    std::vector<float> output(maxOut);
+
+    uint32_t consumedTotal = 0;
+
+    while (consumedTotal < chunkSamples)
+    {
+        uint32_t consumed = 0;
+
+        uint32_t produced = rs.resample(
+            input.data() + consumedTotal,
+            chunkSamples - consumedTotal,
+            output.data(),
+            consumed
+        );
+
+        consumedTotal += consumed;
+
+        if (consumed == 0)
+            break; // safety guard
+
+        // process 'produced' samples here
+        // e.g. send to audio device or encoder
+    }
+
+    return 0;
+}
 ```
 
 ## Benchmark
