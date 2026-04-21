@@ -93,7 +93,7 @@ int main()
     for (auto &v : input) v = 0.1f;
 
     // Allocate correct output size
-    uint32_t maxOut = rs.calculateOutputSampleCounts(chunkSamples);
+    uint32_t maxOut = rs.calculateOutputBufferSize(chunkSamples);
     std::vector<float> output(maxOut);
 
     uint32_t consumedTotal = 0;
