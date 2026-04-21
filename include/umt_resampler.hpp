@@ -987,7 +987,7 @@ namespace umt {
         }
 
         [[nodiscard]]
-        uint32_t calculateOutputSampleCounts(uint32_t srcSamples) const
+        uint32_t calculateOutputBufferSize(uint32_t srcSamples) const
         {
             uint32_t frames = srcSamples / srcChannels;
             uint32_t outFrames = (frames * dstRate_ + srcRate_ - 1) / srcRate_;
@@ -1004,8 +1004,8 @@ namespace umt {
 
         /*
          * Returns How Many Samples is Produced in Output Buffer
-         * consumedInputSamples Used to Determine how much Input Samples is Consumed by Resampler if
-         * So that they can be resend remaining inputSamples after consuming Resampled data
+         * consumedInputSamples Used to Determine how much Input Samples is Consumed by Resampler
+         * And How much Remining to Process and can be resend again after consuming Resampled data
          */
         optimize
         uint32_t resample(
