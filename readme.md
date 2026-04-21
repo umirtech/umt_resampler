@@ -129,9 +129,9 @@ int main()
 |--------|------|
 | Channels | 2 → 2 |
 | Sample Rate | 48000 → 44100 |
-| Samples/sec | 140774946.01 |
-| Frames/sec | 70387473.01 |
-| Realtime Factor | 1596.09x |
-| Last Updated | 2026-04-20 11:15 UTC |
+| Samples/sec | 111113664.45 |
+| Frames/sec | 55556832.23 |
+| Realtime Factor | 1259.79x |
+| Last Updated | 2026-04-21 02:43 UTC |
 
 <!-- BENCHMARK_END -->
