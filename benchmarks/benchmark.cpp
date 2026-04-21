@@ -55,7 +55,7 @@ void benchmarkResampler(
         umt::Resampler rs;
         rs.init(srcChannels, dstChannels, srcRate, dstRate);
 
-        uint32_t expectedOut = rs.calculateOutputSampleCounts(totalSamples);
+        uint32_t expectedOut = rs.calculateOutputBufferSize(totalSamples);
         std::vector<float> output(expectedOut);
 
 
