@@ -1003,7 +1003,7 @@ namespace umt {
         }
 
         /*
-         * Returns How Many Samples is Produced in Output Buffer
+         * Returns Produced Samples in Output Buffer
          * consumedInputSamples Used to Determine how much Input Samples is Consumed by Resampler
          * And How much Remining to Process and can be resend again after consuming Resampled data
          */
