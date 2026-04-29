@@ -262,18 +262,30 @@ namespace umt {
         }
 
         template<typename T>
-        inline void free_aligned(T* p)
+        inline void free_aligned(T* p, size_t align = 64)
         {
-            ::operator delete[](p, std::align_val_t(64));
+            if (!p) return;
+            ::operator delete[](p, std::align_val_t(align));
         }
 
         void freeMemory() {
             free_aligned(soa);
+            soa = nullptr;
+
             free_aligned(fused);
+            fused = nullptr;
+
             free_aligned(fusedPacked2x2);
+            fusedPacked2x2 = nullptr;
+
             free_aligned(fusedPacked6x2);
+            fusedPacked6x2 = nullptr;
+
             free_aligned(fusedPacked8x2);
+            fusedPacked8x2 = nullptr;
+
             free_aligned(fusedPacked10x2);
+            fusedPacked10x2 = nullptr;
         }
 
         void buildMixMatrix(float* __restrict mixMatrix)
